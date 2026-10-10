@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>QUANTUM-SHIELD | BB84 QKD & Critical Infrastructure Defense</title>
+  <link rel="stylesheet" href="/static/style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+  <div class="app-container">
+    <header class="header">
+      <div class="brand">
+        <div class="logo-shield">⚛️</div>
+        <div>
+          <h1>QUANTUM-SHIELD</h1>
+          <p class="subtitle">BB84 Quantum Key Distribution & Critical-Infrastructure Threat Monitor</p>
+        </div>
+      </div>
+      <div class="header-status">
+        <span class="badge prototype-badge">Simulation & Educational Prototype</span>
+        <span id="system-status-indicator" class="status-indicator status-ready">SYSTEM READY</span>
+      </div>
+    </header>
+
+    <!-- Honesty Disclaimer Banner -->
+    <div class="disclaimer-banner">
+      <span class="disclaimer-icon">ℹ️</span>
+      <p>
+        <strong>Educational Simulation Notice:</strong> This platform simulates single-photon polarization encoding, wave-function measurement collapse, and QBER analysis. QKD distributes symmetric keys; AES-256-GCM protects the message. The remote substation is simulated and does not control live power grid assets.
+      </p>
+    </div>
+
+    <!-- 7-Panel Grid Layout -->
+    <main class="dashboard-grid">
+      <!-- Panel 1: Controls -->
+      <section class="panel panel-controls">
+        <div class="panel-header">
+          <h2>Panel 1: Controls & Parameters</h2>
+          <span class="panel-tag">AerSimulator</span>
+        </div>
+        <div class="control-group">
+          <label for="qubit-count">Number of Qubits (N):</label>
+          <div class="input-row">
+            <input type="range" id="qubit-count" min="50" max="1000" step="50" value="100">
+            <span id="qubit-count-val" class="value-badge">100</span>
+          </div>
+        </div>
+        <div class="control-group">
+          <label>Adversary Eve (Intercept-Resend Attack):</label>
+          <div class="toggle-container">
+            <label class="switch">
+              <input type="checkbox" id="eve-toggle">
+              <span class="slider round"></span>
+            </label>
+            <span id="eve-label" class="toggle-label">Eve: DISABLED (Normal Channel)</span>
+          </div>
+        </div>
+        <div class="control-group">
+          <label for="threshold-slider">QBER Security Threshold (Educational):</label>
+          <div class="input-row">
+            <input type="range" id="threshold-slider" min="5" max="25" step="1" value="11">
+            <span id="threshold-val" class="value-badge">11%</span>
+          </div>
+          <small class="helper-text">Standard BB84 asymptotic limit is ~11.0%</small>
+        </div>
+        <div class="control-group">
+          <label for="backend-select">Quantum Simulation Backend:</label>
+          <select id="backend-select" class="select-input">
+            <option value="AerSimulator">Qiskit AerSimulator (Local Quantum Simulator - Default)</option>
+            <option value="IBM_Quantum_Sim">IBM Quantum Cloud Backend (Simulated)</option>
+          </select>
+        </div>
+        <button id="btn-run-sim" class="btn btn-primary">⚛️ Run BB84 Simulation</button>
+      </section>
+
+      <!-- Panel 2: BB84 Flow Visualization -->
+      <section class="panel panel-flow">
+        <div class="panel-header">
+          <h2>Panel 2: BB84 Protocol Flow & Circuit Gates</h2>
+          <span class="panel-tag">X & H Gates</span>
+        </div>
+        <p class="panel-desc">Showing photon polarization preparation, basis selection, and Bob's measurement:</p>
+        <div class="table-container">
+          <table class="flow-table">
+            <thead>
+              <tr>
+                <th>#</th>
+                <th>Alice Bit</th>
+                <th>Alice Basis</th>
+                <th>Circuit Gates</th>
+                <th>Eve Basis</th>
+                <th>Eve Meas</th>
+                <th>Bob Basis</th>
+                <th>Bob Meas</th>
+                <th>Sifted Match?</th>
+                <th>Error</th>
+              </tr>
+            </thead>
+            <tbody id="flow-tbody">
+              <tr><td colspan="10" class="text-center">Run simulation to display microscopic qubit trace...</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <!-- Panel 3: QBER Gauge & History Chart -->
+      <section class="panel panel-qber">
+        <div class="panel-header">
+          <h2>Panel 3: QBER Gauge & Multi-Run History</h2>
+          <span class="panel-tag">Error Rate</span>
+        </div>
+        <div class="qber-display-row">
+          <div class="gauge-box">
+            <div class="qber-value" id="qber-metric">0.0%</div>
+            <div class="qber-label">Measured QBER</div>
+            <div class="qber-sublabel" id="qber-comparison">Threshold: 11.0%</div>
+          </div>
+          <div class="chart-box">
+            <canvas id="qberChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel 4: Key Status & Cryptographic Hash -->
+      <section class="panel panel-key">
+        <div class="panel-header">
+          <h2>Panel 4: Key Processing & Privacy Amplification</h2>
+          <span class="panel-tag">AES-256 Key</span>
+        </div>
+        <div class="key-metrics-grid">
+          <div class="metric-card">
+            <div class="metric-num" id="sifted-bits-count">--</div>
+            <div class="metric-lbl">Sifted Key Length</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-num" id="reconciled-errors-count">--</div>
+            <div class="metric-lbl">Errors Corrected</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-status" id="key-decision-status">AWAITING RUN</div>
+            <div class="metric-lbl">Decision</div>
+          </div>
+        </div>
+        <div class="key-hex-box">
+          <label>Derived 256-Bit AES Key (SHA-256 Digest of Reconciled Key):</label>
+          <div class="key-display" id="aes-key-hex">Awaiting simulation run...</div>
+        </div>
+      </section>
+
+      <!-- Panel 5: Encrypted Command Console -->
+      <section class="panel panel-console">
+        <div class="panel-header">
+          <h2>Panel 5: Critical Command Console (AES-256-GCM)</h2>
+          <span class="panel-tag">SCADA Dispatch</span>
+        </div>
+        <div class="command-input-group">
+          <label for="command-input">SCADA Control Instruction:</label>
+          <div class="input-with-btn">
+            <input type="text" id="command-input" value="Reduce power output to 70%" placeholder="Type critical infrastructure command...">
+            <button id="btn-send-command" class="btn btn-accent">🔒 Encrypt & Send</button>
+            <button id="btn-tamper-command" class="btn btn-warning" title="Simulate attacker tampering with ciphertext in flight">⚠️ Test Tamper</button>
+          </div>
+        </div>
+        <div class="crypto-details-grid">
+          <div class="crypto-field">
+            <span class="field-label">96-Bit Nonce (Hex):</span>
+            <span class="field-val" id="crypto-nonce">--</span>
+          </div>
+          <div class="crypto-field">
+            <span class="field-label">128-Bit Auth Tag (Hex):</span>
+            <span class="field-val" id="crypto-tag">--</span>
+          </div>
+          <div class="crypto-field full-width">
+            <span class="field-label">Ciphertext (Hex):</span>
+            <span class="field-val code-font" id="crypto-ciphertext">--</span>
+          </div>
+        </div>
+        <div class="bob-decryption-result" id="decryption-result-box">
+          <span class="field-label">Substation Bob Decrypted Result:</span>
+          <div class="result-text" id="decryption-result-text">Awaiting transmission...</div>
+        </div>
+      </section>
+
+      <!-- Panel 6: Event Log & Security Alerts -->
+      <section class="panel panel-logs">
+        <div class="panel-header">
+          <h2>Panel 6: Real-Time Event Log & Security Alerts</h2>
+          <span class="panel-tag">SIEM Feed</span>
+        </div>
+        <div class="log-stream" id="log-stream">
+          <!-- Logs injected by app.js -->
+        </div>
+      </section>
+
+      <!-- Panel 7: AI Anomaly Monitor -->
+      <section class="panel panel-ai">
+        <div class="panel-header">
+          <h2>Panel 7: AI Anomaly Monitor (Isolation Forest)</h2>
+          <span class="panel-tag">scikit-learn</span>
+        </div>
+        <div class="ai-metrics-row">
+          <div class="ai-card">
+            <div class="ai-status" id="ai-status-label">NORMAL</div>
+            <div class="ai-lbl">Isolation Forest Classification</div>
+          </div>
+          <div class="ai-card">
+            <div class="ai-score-num" id="ai-score-num">+0.120</div>
+            <div class="ai-lbl">Decision Anomaly Score</div>
+          </div>
+        </div>
+        <p class="ai-explanation" id="ai-explanation-text">
+          Session features (QBER, sifted length, rejection rate, auth failures) evaluated against normal baseline distribution.
+        </p>
+      </section>
+    </main>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
+</html>
